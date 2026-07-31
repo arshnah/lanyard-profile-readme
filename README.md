@@ -1,7 +1,3 @@
-> ❗ IMPORTANT ❗
-> 
-> If you are using `lanyard-profile-readme.vercel.app`, change it to `lanyard.cnrad.dev` at your earliest convenience!
-
 <!-- markdownlint-disable -->
 # lanyard-profile-readme
 
@@ -16,14 +12,18 @@ First, join the Lanyard [Discord](https://discord.com/invite/WScAm7vNGF) (if you
 In a `README.md` file, include the following, replacing `:id` with your Discord user ID:
 
 ```md
-[![Discord Presence](https://lanyard.cnrad.dev/api/:id)](https://discord.com/users/:id)
+[![Discord Presence](https://lanyard.arshnah.in/api/:id)](https://discord.com/users/:id)
 ```
 
 It should display something similar to the following (I am using my Discord user ID as an example):
 
-[![Discord Presence](https://lanyard.cnrad.dev/api/705665813994012695)](https://discord.com/users/705665813994012695)
+[![Discord Presence](https://lanyard.arshnah.in/api/705665813994012695)](https://discord.com/users/705665813994012695)
 
 When others click it, they will be directed to your actual Discord profile. Neat!
+
+You can also give a comma-separated list of IDs, e.g. `:id,:alt_id`, to merge a main and alt Discord account into one badge - it shows whichever account isn't offline, with the first one listed as the priority tiebreaker.
+
+If you're embedding a multi-ID URL inside a `<picture>`'s `srcset` attribute (for a light/dark-mode-aware badge), URL-encode the comma as `%2C` - `srcset` treats a raw comma as a candidate-image separator and will silently truncate the URL otherwise.
 
 ## Options
 
@@ -94,10 +94,10 @@ If you don't want to display a specific application, append the query param `ign
 ## ___Example URL and result___
 
 ```
-[![Discord Presence](https://lanyard.cnrad.dev/api/94490510688792576?theme=light&bg=809ecf&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Probably%20doing%20something%20else...)](https://discord.com/users/94490510688792576)
+[![Discord Presence](https://lanyard.arshnah.in/api/94490510688792576?theme=light&bg=809ecf&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Probably%20doing%20something%20else...)](https://discord.com/users/94490510688792576)
 ```
 
-[![Discord Presence](https://lanyard.cnrad.dev/api/94490510688792576?theme=light&bg=809ecf&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Probably%20doing%20something%20else...)](https://discord.com/users/94490510688792576)
+[![Discord Presence](https://lanyard.arshnah.in/api/94490510688792576?theme=light&bg=809ecf&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Probably%20doing%20something%20else...)](https://discord.com/users/94490510688792576)
 
 \
 Note: Current Nitro & Boosting badges **do not work due** to Discord API limitations, unless you currently have an animated avatar, in which case it will display the Nitro badge.

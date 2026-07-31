@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, JSX } from "react";
+import React, { useEffect, useState, JSX } from "react";
 import { motion } from "motion/react";
 import { isSnowflake } from "@/utils/snowflake";
 import { IParameterInfo, PARAMETER_INFO } from "@/utils/parameters";
@@ -9,10 +9,13 @@ import { InfoTooltip } from "@/components/Popover";
 import { cn, filterLetters } from "@/utils/helpers";
 
 export default function Home() {
-  const ORIGIN_URL =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : "https://lanyard.cnrad.dev";
+  // matches the SSR-rendered production URL until mount, then swaps to
+  // whatever port the dev server actually runs on - avoids hardcoding a port
+  // that only holds for one particular local setup
+  const [ORIGIN_URL, setOriginUrl] = useState("https://lanyard.arshnah.in");
+  useEffect(() => {
+    if (window.location.hostname === "localhost") setOriginUrl(window.location.origin);
+  }, []);
 
   const [userId, setUserId] = useState("");
   const [userError, setUserError] = useState<string | JSX.Element>();
@@ -287,7 +290,7 @@ export default function Home() {
               </div>
 
               <a
-                href="https://github.com/cnrad/lanyard-profile-readme?tab=readme-ov-file#options"
+                href="https://github.com/arshnah/lanyard-profile-readme?tab=readme-ov-file#options"
                 rel="noreferrer noopener"
                 target="_blank"
                 className="flex flex-row items-center justify-center gap-2 mt-4 text-sm text-white/75 hover:text-white w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-full py-1.5 transition-colors duration-150 ease-out"

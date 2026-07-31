@@ -94,14 +94,6 @@ export const PARAMETER_INFO: IParameterInfo = [
           name: "Dark",
           value: "dark",
         },
-        {
-          name: "Sunset",
-          value: "sunset",
-        },
-        {
-          name: "Sunrise",
-          value: "sunrise",
-        },
       ],
     },
   },

@@ -4,17 +4,9 @@ import { elapsedTime, getFlags } from "@/utils/helpers";
 import { ProfileSettings } from "@/utils/parameters";
 import React, { DetailedHTMLProps, HTMLAttributes } from "react";
 
-// arshnah.in's own palette (dark/light/sunset/sunrise — same tokens as the
-// site's globals.css) so the badge can match the rest of the site instead of
-// only offering the generic light/dark pair.
-const THEME_COLORS: Record<
-  string,
-  { bg: string; ink: string; muted: string; border: string }
-> = {
-  dark: { bg: "0a0a12", ink: "#e8e8ec", muted: "#9a9aa8", border: "#25252f" },
-  light: { bg: "ffffff", ink: "#111111", muted: "#555555", border: "#cccccc" },
-  sunset: { bg: "241220", ink: "#f7e8dc", muted: "#c9a3a8", border: "#4a2740" },
-  sunrise: { bg: "1c2340", ink: "#fbeee2", muted: "#b9b0d4", border: "#454875" },
+const THEME_COLORS: Record<string, { bg: string; ink: string; muted: string }> = {
+  dark: { bg: "0a0a12", ink: "#e8e8ec", muted: "#9a9aa8" },
+  light: { bg: "ffffff", ink: "#111111", muted: "#555555" },
 };
 
 interface ProfileCardProps {
