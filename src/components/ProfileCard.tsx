@@ -4,6 +4,19 @@ import { elapsedTime, getFlags } from "@/utils/helpers";
 import { ProfileSettings } from "@/utils/parameters";
 import React, { DetailedHTMLProps, HTMLAttributes } from "react";
 
+// arshnah.in's own palette (dark/light/sunset/sunrise — same tokens as the
+// site's globals.css) so the badge can match the rest of the site instead of
+// only offering the generic light/dark pair.
+const THEME_COLORS: Record<
+  string,
+  { bg: string; ink: string; muted: string; border: string }
+> = {
+  dark: { bg: "0a0a12", ink: "#e8e8ec", muted: "#9a9aa8", border: "#25252f" },
+  light: { bg: "ffffff", ink: "#111111", muted: "#555555", border: "#cccccc" },
+  sunset: { bg: "241220", ink: "#f7e8dc", muted: "#c9a3a8", border: "#4a2740" },
+  sunrise: { bg: "1c2340", ink: "#fbeee2", muted: "#b9b0d4", border: "#454875" },
+};
+
 interface ProfileCardProps {
   settings: ProfileSettings;
   data: Data;
@@ -53,9 +66,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     albumCover,
   } = images;
 
+  const colors = THEME_COLORS[theme] ?? THEME_COLORS.dark;
+  const isDark = theme !== "light";
+
   let avatarBorderColor: string = "#747F8D";
-  const backgroundColor: string =
-    bg ?? (theme === "light" ? "ededed" : "1a1c1f");
+  const backgroundColor: string = bg ?? colors.bg;
 
   switch (data.discord_status) {
     case "online":
@@ -150,7 +165,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             height: `${divHeight}px`,
             inset: 0,
             backgroundColor: `#${backgroundColor}`,
-            color: theme === "dark" ? "#fff" : "#000",
+            color: colors.ink,
             fontFamily: `'Century Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`,
             fontSize: "16px",
             display: "flex",
@@ -175,7 +190,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     !hasAnyListening)
                     ? "none"
                     : `solid 0.5px ${
-                        theme === "dark"
+                        isDark
                           ? "hsl(0, 0%, 100%, 10%)"
                           : "hsl(0, 0%, 0%, 10%)"
                       }`,
@@ -267,7 +282,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     {!hideDiscrim && !showDisplayName ? (
                       <span
                         style={{
-                          color: theme === "dark" ? "#ccc" : "#666",
+                          color: colors.muted,
                           fontWeight: "lighter",
                         }}
                       >
@@ -348,7 +363,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     style={{
                       fontSize: "0.9rem",
                       margin: 0,
-                      color: theme === "dark" ? "#aaa" : "#333",
+                      color: colors.muted,
                       fontWeight: 400,
                       overflow: "hidden",
                       whiteSpace: "nowrap",
@@ -419,7 +434,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 ) : (
                   <img
                     src={`data:image/png;base64,${
-                      theme === "dark" ? UnknownIconLight : UnknownIconDark
+                      isDark ? UnknownIconLight : UnknownIconDark
                     }`}
                     alt="Unknown Icon"
                     style={{
@@ -458,7 +473,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               >
                 <p
                   style={{
-                    color: theme === "dark" ? "#fff" : "#000",
+                    color: colors.ink,
                     fontSize: "0.85rem",
                     fontWeight: "bold",
                     overflow: "hidden",
@@ -473,7 +488,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 {activity.details ? (
                   <p
                     style={{
-                      color: theme === "dark" ? "#ccc" : "#777",
+                      color: colors.muted,
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       fontSize: "0.85rem",
@@ -488,7 +503,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 {activity.state ? (
                   <p
                     style={{
-                      color: theme === "dark" ? "#ccc" : "#777",
+                      color: colors.muted,
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       fontSize: "0.85rem",
@@ -506,7 +521,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 {activity.timestamps?.start && !hideTimestamp ? (
                   <p
                     style={{
-                      color: theme === "dark" ? "#ccc" : "#777",
+                      color: colors.muted,
                       overflow: "hidden",
                       whiteSpace: "nowrap",
                       fontSize: "0.85rem",
@@ -540,7 +555,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               <img
                 src={`data:image/png;base64,${
                   albumCover ??
-                  (theme === "dark" ? UnknownIconLight : UnknownIconDark)
+                  (isDark ? UnknownIconLight : UnknownIconDark)
                 }`}
                 alt="Album Cover"
                 style={{
@@ -566,7 +581,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                   style={{
                     fontSize: "0.75rem",
                     fontWeight: "bold",
-                    color: theme === "dark" ? "#1CB853" : "#0d943d",
+                    color: isDark ? "#1CB853" : "#0d943d",
                     marginBottom: "15px",
                     textTransform: "uppercase",
                   }}
@@ -576,7 +591,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 <p
                   style={{
                     height: "15px",
-                    color: theme === "dark" ? "#fff" : "#000",
+                    color: colors.ink,
                     fontWeight: "bold",
                     fontSize: "0.85rem",
                     overflow: "hidden",
@@ -595,7 +610,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     whiteSpace: "nowrap",
                     fontSize: "0.85rem",
                     textOverflow: "ellipsis",
-                    color: theme === "dark" ? "#ccc" : "#777",
+                    color: colors.muted,
                   }}
                 >
                   By {data.spotify.artist.replace(/; /g, ", ")}
@@ -617,7 +632,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               <img
                 src={`data:image/png;base64,${
                   albumCover ??
-                  (theme === "dark" ? UnknownIconLight : UnknownIconDark)
+                  (isDark ? UnknownIconLight : UnknownIconDark)
                 }`}
                 alt="Album Cover"
                 style={{
@@ -644,8 +659,8 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     fontSize: "0.75rem",
                     fontWeight: "bold",
                     color: isAppleMusic
-                      ? theme === "dark" ? "#FA243C" : "#d42135"
-                      : theme === "dark" ? "#9B59B6" : "#7d3c98",
+                      ? isDark ? "#FA243C" : "#d42135"
+                      : isDark ? "#9B59B6" : "#7d3c98",
                     marginBottom: "15px",
                     textTransform: "uppercase",
                   }}
@@ -655,7 +670,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 <p
                   style={{
                     height: "15px",
-                    color: theme === "dark" ? "#fff" : "#000",
+                    color: colors.ink,
                     fontWeight: "bold",
                     fontSize: "0.85rem",
                     overflow: "hidden",
@@ -674,7 +689,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                     whiteSpace: "nowrap",
                     fontSize: "0.85rem",
                     textOverflow: "ellipsis",
-                    color: theme === "dark" ? "#ccc" : "#777",
+                    color: colors.muted,
                   }}
                 >
                   By {musicActivity!.state?.replace(/; /g, ", ")}
@@ -699,7 +714,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 style={{
                   fontStyle: "italic",
                   fontSize: "0.8rem",
-                  color: theme === "dark" ? "#aaa" : "#444",
+                  color: colors.muted,
                   height: "auto",
                   textAlign: "center",
                 }}

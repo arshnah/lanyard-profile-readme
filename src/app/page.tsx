@@ -17,6 +17,9 @@ export default function Home() {
   const [userId, setUserId] = useState("");
   const [userError, setUserError] = useState<string | JSX.Element>();
 
+  const [altUserId, setAltUserId] = useState("");
+  const [altUserError, setAltUserError] = useState<string | JSX.Element>();
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [options, setOptions] = useState<Record<string, string | boolean>>({});
 
@@ -30,7 +33,24 @@ export default function Home() {
       return setUserError("Invalid Discord ID");
   }
 
-  const url = `${ORIGIN_URL}/api/${userId}${
+  async function onLoadAltDiscordId(altUserId: string) {
+    setAltUserId(altUserId);
+    setAltUserError(undefined);
+
+    if (altUserId.length < 1) return;
+    if (altUserId.length > 0 && !isSnowflake(altUserId))
+      return setAltUserError("Invalid Discord ID");
+  }
+
+  // a second, alternate account ID is optional — when set (and valid), it's
+  // appended as a comma-separated list so the badge shows whichever of the
+  // two accounts is currently active
+  const combinedId =
+    altUserId.length > 0 && isSnowflake(altUserId)
+      ? `${userId},${altUserId}`
+      : userId;
+
+  const url = `${ORIGIN_URL}/api/${combinedId}${
     Object.keys(options).length > 0
       ? `?${Object.keys(options)
           .map((option) => `${option}=${options[option]}`)
@@ -84,6 +104,19 @@ export default function Home() {
               >
                 {userError}
               </motion.p>
+            ) : null}
+
+            <div className="mt-2 flex h-[2.25rem] w-full flex-row gap-2">
+              <input
+                className="w-full rounded-lg border border-white/10 bg-transparent px-2.5 py-1.5 font-mono text-sm text-gray-200 transition-colors duration-150 ease-out focus:border-white/50 focus:outline-none"
+                onChange={(e) => onLoadAltDiscordId(e.target.value)}
+                value={altUserId || ""}
+                placeholder="Alternate Discord ID (optional — shows whichever account is active)"
+              />
+            </div>
+
+            {altUserError ? (
+              <p className="mt-1 text-sm text-red-500">{altUserError}</p>
             ) : null}
 
             <MainSection

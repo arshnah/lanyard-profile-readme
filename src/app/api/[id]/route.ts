@@ -1,8 +1,29 @@
 import ProfileCard from "@/components/ProfileCard";
 import { isSnowflake } from "@/utils/snowflake";
-import { Root } from "@/utils/LanyardTypes";
+import { Root, Data } from "@/utils/LanyardTypes";
 import { extractSearchParams } from "@/utils/extractSearchParams";
 import { fetchUserImages } from "@/utils/fetchUserImages";
+
+async function fetchLanyard(id: string): Promise<Data | null> {
+  try {
+    const json = (await fetch(`https://api.lanyard.rest/v1/users/${id}`, {
+      cache: "no-store",
+    }).then((res) => res.json())) as Root & { error?: string };
+    if (!json.success || "error" in json) return null;
+    return json.data;
+  } catch {
+    return null;
+  }
+}
+
+// Picks the first linked account (in the order given) that isn't offline,
+// so e.g. /api/mainId,altId shows whichever account is actually active.
+// Falls back to the first account's data if every linked account is offline.
+function pickPresence(results: Array<Data | null>): Data | null {
+  const valid = results.filter((r): r is Data => r !== null);
+  if (valid.length === 0) return null;
+  return valid.find((d) => d.discord_status !== "offline") ?? valid[0];
+}
 
 export async function GET(
   request: Request,
@@ -10,9 +31,9 @@ export async function GET(
 ) {
   const ReactDOMServer = (await import("react-dom/server")).default;
   const { searchParams } = new URL(request.url);
-  const { id: userId } = await params;
+  const { id: rawId } = await params;
 
-  if (!userId)
+  if (!rawId)
     return Response.json(
       {
         data: {
@@ -25,11 +46,19 @@ export async function GET(
       }
     );
 
-  if (!isSnowflake(userId))
+  // supports a comma-separated list of snowflakes, e.g. /api/123,456, to
+  // merge multiple Discord accounts into a single badge
+  const ids = rawId
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const invalidId = ids.find((id) => !isSnowflake(id));
+  if (invalidId)
     return Response.json(
       {
         data: {
-          error: "The user ID you provided is not a valid snowflake.",
+          error: `"${invalidId}" is not a valid snowflake.`,
         },
         success: false,
       },
@@ -38,38 +67,34 @@ export async function GET(
       }
     );
 
-  const lanyardData = await fetch(
-    `https://api.lanyard.rest/v1/users/${userId}`,
-    {
-      cache: "no-store",
-    }
-  ).then(async (res) => (await res.json()) as Root & { error?: string });
+  const data = pickPresence(await Promise.all(ids.map(fetchLanyard)));
 
-  if ("error" in lanyardData || !lanyardData.success) {
+  if (!data)
     return Response.json(
       {
-        data: lanyardData.error as string,
+        data: {
+          error: "None of the provided user IDs could be found via Lanyard.",
+        },
         success: false,
       },
       {
         status: 400,
       }
     );
-  }
 
   const settings = await extractSearchParams(
     Object.fromEntries(searchParams.entries()),
-    lanyardData.data
+    data
   );
 
   // Generate SVG
   try {
-    const images = await fetchUserImages(lanyardData.data, settings);
+    const images = await fetchUserImages(data, settings);
 
     // Render React SVG component to string
     const svgString = ReactDOMServer.renderToStaticMarkup(
       await ProfileCard({
-        data: lanyardData.data,
+        data: data,
         settings: settings,
         images: images,
       })
