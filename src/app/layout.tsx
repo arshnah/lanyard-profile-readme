@@ -1,22 +1,23 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CSideScript } from "@c-side/next";
-import { Open_Sans } from "next/font/google";
-import { Roboto_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Head from "next/head";
 
-const openSans = Open_Sans({
+// grain spine rule: every arshnah surface pairs Space Grotesk (display) with
+// JetBrains Mono (the machine voice) - see project-notes/grain.md
+const spaceGrotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-open-sans",
+  variable: "--font-space-grotesk",
 });
 
-const robotoMono = Roboto_Mono({
+const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-roboto-mono",
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default function RootLayout({
         <CSideScript />
       </Head>
       <body
-        className={`${openSans.variable} ${robotoMono.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
       >
         {children}
       </body>
