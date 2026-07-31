@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+/* every component on this page (page.tsx) is written dark-only - text-white,
+   border-white/10, bg-transparent-on-black, no light variants anywhere. This
+   is a config/preview tool, not the badge itself (which does support
+   theme=light/dark), so it always renders dark regardless of the visitor's
+   OS/browser color-scheme preference, instead of going white-on-white. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -11,13 +17,6 @@
 
   --font-sans: var(--font-space-grotesk);
   --font-mono: var(--font-jetbrains-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
