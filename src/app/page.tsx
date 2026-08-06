@@ -69,7 +69,7 @@ export default function Home() {
 
           <div className="w-full sm:max-w-[30rem]">
             <p className="text-left text-3xl font-semibold text-[#cecece] mb-2">
-              🏷️ lanyard-profile-readme{" "}
+              🏷️ LANYARD FOR README (by arshnah){" "}
             </p>
 
             <p className="mb-2 text-sm text-[#aaabaf]">
@@ -114,7 +114,7 @@ export default function Home() {
                 className="w-full rounded-lg border border-white/10 bg-transparent px-2.5 py-1.5 font-mono text-sm text-gray-200 transition-colors duration-150 ease-out focus:border-white/50 focus:outline-none"
                 onChange={(e) => onLoadAltDiscordId(e.target.value)}
                 value={altUserId || ""}
-                placeholder="Alternate Discord ID (optional — shows whichever account is active)"
+                placeholder="Alternate Discord ID (optional)"
               />
             </div>
 
