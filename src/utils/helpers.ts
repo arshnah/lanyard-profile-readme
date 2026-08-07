@@ -66,3 +66,112 @@ export const ImageSize = {
   ACTIVITY_LARGE: 128,
   ACTIVITY_SMALL: 32,
 };
+
+// Base64 payloads arrive with their mime type already decided by whoever
+// requested them (webp for CDN assets, png for embeds), but the RPC icon
+// fallback and a couple of edge cases hand back raw bytes with no header --
+// sniff the magic bytes so the data: URI doesn't lie about its own type.
+export function getImageDataUri(base64: string | null): string {
+  if (!base64) return "";
+  if (base64.startsWith("data:")) return base64;
+
+  let mime = "image/png";
+  if (base64.startsWith("UklGR")) {
+    mime = "image/webp";
+  } else if (base64.startsWith("R0lGOD")) {
+    mime = "image/gif";
+  } else if (base64.startsWith("/9j/")) {
+    mime = "image/jpeg";
+  } else if (base64.startsWith("iVBORw")) {
+    mime = "image/png";
+  }
+
+  return `data:${mime};base64,${base64}`;
+}
+
+export function hexToHsl(hex: string): [number, number, number] {
+  hex = hex.replace("#", "");
+
+  const r = parseInt(hex.slice(0, 2), 16) / 255;
+  const g = parseInt(hex.slice(2, 4), 16) / 255;
+  const b = parseInt(hex.slice(4, 6), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+export function hslToHex(h: number, s: number, l: number): string {
+  h = h / 360;
+  s = s / 100;
+  l = l / 100;
+
+  const hue2rgb = (p: number, q: number, t: number) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+
+  let r: number;
+  let g: number;
+  let b: number;
+
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+
+  const toHex = (c: number) => {
+    const hex = Math.round(c * 255).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+
+  return `${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+// Derives a secondary (muted) text color from a user-supplied primary
+// textColor by nudging its lightness -- lighter on dark backgrounds, darker
+// on light ones -- so a custom text color still reads as "the same color,
+// but quieter" instead of needing its own separate parameter.
+export function adjustTextColor(textColor: string, theme: string, adjustment: number): string {
+  const [h, s, l] = hexToHsl(textColor);
+  const newL = theme === "light" ? Math.max(0, l - adjustment) : Math.min(100, l + adjustment);
+  return hslToHex(h, s, newL);
+}
+
+// bg accepts either a bare hex color (with or without '#') or any raw CSS
+// `background` value (a gradient, a named color, etc). Only true hex shapes
+// get a '#' auto-prepended; anything else -- most commonly a gradient() call
+// -- passes through untouched, per cnrad's own review guidance on PR #72.
+export function isHexColor(value: string): boolean {
+  return /^#?([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(value.trim());
+}

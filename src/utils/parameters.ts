@@ -1,6 +1,8 @@
 export type ProfileSettings = {
   theme?: string;
   bg?: string;
+  textColor?: string;
+  borderColor?: string;
   clanBackgroundColor?: string;
   animated?: boolean;
   animatedDecoration?: boolean;
@@ -18,12 +20,17 @@ export type ProfileSettings = {
   showDisplayName?: boolean;
   borderRadius?: string;
   idleMessage?: string;
+  fontScale?: number;
+  cardWidth?: number;
+  cardHeight?: number;
   optimized?: boolean;
 };
 
 export type SearchParams = {
   theme?: string;
   bg?: "dark" | "light" | string;
+  textColor?: string;
+  borderColor?: string;
   clanBackgroundColor?: string;
   animated?: string;
   animatedDecoration?: string;
@@ -41,6 +48,9 @@ export type SearchParams = {
   showDisplayName?: string;
   borderRadius?: string;
   idleMessage?: string;
+  fontScale?: string;
+  cardWidth?: string;
+  cardHeight?: string;
 };
 
 export type IParameterInfo = Array<
@@ -100,11 +110,63 @@ export const PARAMETER_INFO: IParameterInfo = [
   {
     parameter: "bg",
     type: "string",
-    title: "Background Color",
-    description: "Changes the background color to a hex color (no octothorpe).",
+    title: "Background",
+    description:
+      "Changes the background to a hex color (no octothorpe) or any CSS `background` value, e.g. a gradient like `linear-gradient(45deg,f00,0f0)`.",
     options: {
       placeholder: "1A1C1F",
       omit: ["#"],
+    },
+  },
+  {
+    parameter: "textColor",
+    type: "string",
+    title: "Text Color",
+    description:
+      "Changes the primary text color to a hex color (no octothorpe). Secondary text is automatically adjusted from it based on the `theme` parameter.",
+    options: {
+      placeholder: "FFFFFF",
+      omit: ["#"],
+    },
+  },
+  {
+    parameter: "borderColor",
+    type: "string",
+    title: "Border Color",
+    description: "Changes the card border to a hex color (no octothorpe).",
+    options: {
+      placeholder: "1B1B26",
+      omit: ["#"],
+    },
+  },
+  {
+    parameter: "fontScale",
+    type: "string",
+    title: "Font Scale",
+    description:
+      "Scales text size inside the card. Accepts values from 0.75 to 1.00.",
+    options: {
+      placeholder: "0.90",
+    },
+  },
+  {
+    parameter: "cardWidth",
+    type: "string",
+    title: "Card Width",
+    description:
+      "Resizes the card to this width in pixels (200-800). Height scales with it proportionally unless `cardHeight` is also set, in which case both are used exactly (which can stretch avatars/icons if the ratio is far from the original).",
+    options: {
+      placeholder: "410",
+    },
+  },
+  {
+    parameter: "cardHeight",
+    type: "string",
+    title: "Card Height",
+    description:
+      "Resizes the card to this height in pixels (150-1200). Width scales with it proportionally unless `cardWidth` is also set.",
+    options: {
+      placeholder: "210",
     },
   },
   {

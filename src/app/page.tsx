@@ -334,6 +334,7 @@ const MainSection = ({
       )}
     >
       {userId.length > 0 && isSnowflake(userId) ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={url}
           height={280}

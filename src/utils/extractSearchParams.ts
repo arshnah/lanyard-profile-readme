@@ -44,6 +44,19 @@ export function extractSearchParams(
   const animated = parseBool(params.animated);
   const animatedDecoration = parseBool(params.animatedDecoration);
 
+  const parsedFontScale = Number(params.fontScale);
+  const fontScale = Number.isFinite(parsedFontScale) && params.fontScale
+    ? Math.min(1, Math.max(0.75, parsedFontScale))
+    : 1;
+
+  const parseClamped = (value: string | undefined, min: number, max: number): number | undefined => {
+    if (!value) return undefined;
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : undefined;
+  };
+  const cardWidth = parseClamped(params.cardWidth, 200, 800);
+  const cardHeight = parseClamped(params.cardHeight, 150, 1200);
+
   const clanBackgroundColor: string =
     params.theme === "light" ? "#e0dede" : "#111214";
 
@@ -65,8 +78,13 @@ export function extractSearchParams(
     optimized,
     theme: params.theme,
     bg: params.bg,
+    textColor: params.textColor,
+    borderColor: params.borderColor,
     clanBackgroundColor: params.clanBackgroundColor ?? clanBackgroundColor,
     borderRadius: params.borderRadius,
     idleMessage: params.idleMessage,
+    fontScale,
+    cardWidth,
+    cardHeight,
   };
 }
